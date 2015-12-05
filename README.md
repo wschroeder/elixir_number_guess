@@ -1,6 +1,9 @@
 # NumberGuess
 
-**TODO: Add description**
+This is the NumberGuess game!
+
+The computer opponent comes up with a secret number between 1 and 100, and you
+get six chances to guess it.
 
 ## Installation
 
