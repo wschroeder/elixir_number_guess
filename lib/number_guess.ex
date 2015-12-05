@@ -8,7 +8,7 @@ defmodule NumberGuess do
 
     children = [
       # Define workers and child supervisors to be supervised
-      # worker(NumberGuess.Worker, [arg1, arg2, arg3]),
+      worker(NumberGuess.GameSup, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
