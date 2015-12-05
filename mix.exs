@@ -28,6 +28,8 @@ defmodule NumberGuess.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:credo, "~> 0.1.9", only: [:dev, :test]}
+    ]
   end
 end
