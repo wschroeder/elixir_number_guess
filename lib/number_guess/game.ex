@@ -10,9 +10,6 @@ defmodule NumberGuess.Game do
     GenServer.start_link __MODULE__, starting_number
   end
 
-  def stop(pid) do
-    GenServer.cast(pid, :stop)
-  end
 
   def get_guesses(pid) do
     GenServer.call pid, :get_guesses
@@ -70,9 +67,6 @@ defmodule NumberGuess.Game do
       %State{guesses: guesses - 1, number: number}}
   end
 
-  def handle_cast(:stop, state) do
-    {:stop, :requested_stop, state}
-  end
 
 end
 
