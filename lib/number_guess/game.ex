@@ -7,7 +7,7 @@ defmodule NumberGuess.Game do
   # External API
 
   def start_link(starting_number \\ :random) do
-    GenServer.start_link(__MODULE__, starting_number)
+    GenServer.start_link __MODULE__, starting_number
   end
 
   def stop(pid) do
@@ -15,11 +15,11 @@ defmodule NumberGuess.Game do
   end
 
   def get_guesses(pid) do
-    GenServer.call(pid, :get_guesses)
+    GenServer.call pid, :get_guesses
   end
 
   def guess(pid, number) do
-    GenServer.call(pid, {:guess, number})
+    GenServer.call pid, {:guess, number}
   end
 
 
