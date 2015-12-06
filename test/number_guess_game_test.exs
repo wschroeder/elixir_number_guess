@@ -29,8 +29,10 @@ defmodule NumberGuessGameTest do
   end
 
   defp with_new_server(number, block) do
+    {:ok, db_pid}   = GenServer.start NumberGuess.Game.DB, number
     {:ok, game_pid} = GenServer.start NumberGuess.Game, db_pid
     block.(game_pid)
     Process.exit(game_pid, :test_done)
+    Process.exit(db_pid, :test_done)
   end
 end

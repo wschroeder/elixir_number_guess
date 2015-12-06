@@ -4,20 +4,20 @@ defmodule NumberGuess.GameSup do
   ####
   # External API
 
-  def start_link do
-    Supervisor.start_link __MODULE__, :random
+  def start_link(db_pid) do
+    Supervisor.start_link __MODULE__, db_pid
   end
 
 
   ####
   # Supervisor
 
-  def init(starting_number) do
+  def init(db_pid) do
     children = [
-      worker(NumberGuess.Game, [starting_number])
+      worker(NumberGuess.Game, [db_pid])
     ]
 
-    supervise children, strategy: :one_for_one
+    supervise children, strategy: :one_for_all
   end
 
 end

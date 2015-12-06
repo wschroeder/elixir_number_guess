@@ -6,10 +6,9 @@ defmodule NumberGuess.Game do
   ####
   # External API
 
-  def start_link(starting_number \\ :random) do
-    GenServer.start_link __MODULE__, starting_number
+  def start_link(db_pid) do
+    GenServer.start_link __MODULE__, db_pid
   end
-
 
   def get_guesses(pid) do
     GenServer.call pid, :get_guesses
@@ -23,12 +22,8 @@ defmodule NumberGuess.Game do
   ####
   # Helpers
 
-  defp new_game_state(:random) do
+  defp new_game_state do
     %State{number: :random.uniform 100}
-  end
-
-  defp new_game_state(number) do
-    %State{number: number}
   end
 
   defp judge(guessed_number, number) when guessed_number > number, do: :too_high
@@ -38,35 +33,39 @@ defmodule NumberGuess.Game do
   ####
   # GenServer
 
-  def init(number) do
-    _ = :random.seed :erlang.now
-    {:ok, new_game_state number}
+  def init(db_pid) do
+    starting_state = NumberGuess.Game.DB.state db_pid
+    {:ok, {starting_state, db_pid}}
   end
 
-  def handle_call(:get_guesses, _from, state = %State{guesses: guesses}) do
+  def terminate(_reason, {current_state, db_pid}) do
+    _ = NumberGuess.Game.DB.state db_pid, current_state
+    :ok
+  end
+
+  def handle_call(:get_guesses, _from, current_state = {%State{guesses: guesses}, _}) do
     {:reply,
       {:guesses, guesses},
-      state}
+      current_state}
   end
 
-  def handle_call({:guess, guessed_number}, _from, %State{guesses: guesses, number: guessed_number}) when is_number guessed_number do
+  def handle_call({:guess, guessed_number}, _from, {%State{guesses: guesses, number: guessed_number}, db_pid}) when is_number guessed_number do
     {:reply,
       {:guess, guessed_number, :you_win, guesses - 1},
-      new_game_state :random}
+      {new_game_state, db_pid}}
   end
 
-  def handle_call({:guess, guessed_number}, _from, %State{guesses: 1, number: number}) when is_number guessed_number do
+  def handle_call({:guess, guessed_number}, _from, {%State{guesses: 1, number: number}, db_pid}) when is_number guessed_number do
     {:reply,
       {:guess, guessed_number, :you_lose, number},
-      new_game_state :random}
+      {new_game_state, db_pid}}
   end
 
-  def handle_call({:guess, guessed_number}, _from, %State{guesses: guesses, number: number}) when is_number guessed_number do
+  def handle_call({:guess, guessed_number}, _from, {%State{guesses: guesses, number: number}, db_pid}) when is_number guessed_number do
     {:reply,
       {:guess, guessed_number, judge(guessed_number, number), guesses - 1},
-      %State{guesses: guesses - 1, number: number}}
+      {%State{guesses: guesses - 1, number: number}, db_pid}}
   end
-
 
 end
 
