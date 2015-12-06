@@ -1,5 +1,5 @@
 defmodule NumberGuess.Game do
-  use GenServer;
+  use GenServer
   alias NumberGuess.Game.State, as: State
 
 
