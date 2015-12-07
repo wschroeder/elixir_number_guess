@@ -6,40 +6,22 @@ defmodule NumberGuess.DB do
   DB stores.
   """
 
-  use GenServer
-
-  ####
-  # External API
-
   @spec start_link(term()) :: GenServer.on_start()
   @doc "Starts the DB server with an optional document and links it to the current process"
   def start_link(starting_state \\ :no_state) do
-    GenServer.start_link __MODULE__, starting_state
+    Agent.start_link fn -> starting_state end
   end
 
   @spec state(pid()) :: term()
   @doc "Retrieves the current document/term stored in the DB."
   def state(pid) do
-    GenServer.call pid, :get_state
+    Agent.get pid, &(&1)
   end
 
   @spec state(pid(), term()) :: :ok
   @doc "Stores a document/term in the DB."
   def state(pid, new_state) do
-    GenServer.cast pid, {:set_state, new_state}
+    Agent.update pid, fn _ -> new_state end
   end
-
-
-  ####
-  # GenServer
-
-  def handle_call(:get_state, _from, current_state) do
-    {:reply, current_state, current_state}
-  end
-
-  def handle_cast({:set_state, new_state}, _old_state) do
-    {:noreply, new_state}
-  end
-
 end
 

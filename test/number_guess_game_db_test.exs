@@ -16,7 +16,7 @@ defmodule NumberGuessGameDBTest do
   end
 
   defp with_new_server(block) do
-    {:ok, pid} = GenServer.start NumberGuess.DB, :no_state
+    {:ok, pid} = NumberGuess.DB.start_link
     block.(pid)
     Process.exit(pid, :test_done)
   end

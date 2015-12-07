@@ -30,13 +30,21 @@ defmodule NumberGuessGameTest do
   end
 
   defp with_new_server(number, block) do
-    {:ok, db_pid}   = GenServer.start NumberGuess.DB, nil
+    ensure_unregister_name NumberGuess.Engine
+    {:ok, db_pid}   = NumberGuess.DB.start_link
     :ok             = NumberGuess.DB.state db_pid, %State{number: number, db_pid: db_pid}
-    {:ok, game_pid} = GenServer.start NumberGuess.Engine, db_pid
+    {:ok, game_pid} = NumberGuess.Engine.start_link db_pid
 
     block.(game_pid)
 
     Process.exit(game_pid, :test_done)
     Process.exit(db_pid, :test_done)
   end
+
+  defp ensure_unregister_name(registered_name) do
+    unregister_name registered_name, :erlang.whereis registered_name
+  end
+
+  defp unregister_name(_, :undefined), do: true
+  defp unregister_name(name, _),       do: :erlang.unregister name
 end
