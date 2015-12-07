@@ -10,7 +10,7 @@ get six chances to guess it.
 
 This game is designed to be run as an escript.  Use:
 
-  mix escript.build
+    mix escript.build
 
 
 to produce a "number_guess" script, and enjoy the game!
