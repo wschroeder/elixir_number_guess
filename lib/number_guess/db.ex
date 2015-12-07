@@ -1,4 +1,4 @@
-defmodule NumberGuess.Game.DB do
+defmodule NumberGuess.DB do
   @moduledoc """
   Generic document storage for the Number Guess game.  It's pretty cheesy, but
   one can pretty much store any single term in this DB.  The only special term

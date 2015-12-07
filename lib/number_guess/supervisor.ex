@@ -1,6 +1,6 @@
-defmodule NumberGuess.Game.DBSup do
+defmodule NumberGuess.Supervisor do
   @moduledoc """
-  This is the supervisor for the Number Guess game DB.
+  This is the supervisor for the Number Guess game.
   """
 
   use Supervisor
@@ -10,7 +10,7 @@ defmodule NumberGuess.Game.DBSup do
 
   @spec start_link() :: Supervisor.on_start()
   @doc """
-  Starts and links the Number Guess game DB supervisor to the current process.
+  Starts and links the Number Guess supervisor to the current process.
   """
   def start_link do
     result = {:ok, sup_pid} = Supervisor.start_link __MODULE__, []
@@ -27,8 +27,8 @@ defmodule NumberGuess.Game.DBSup do
   end
 
   defp start_workers(sup_pid) do
-    {:ok, db_pid}        = Supervisor.start_child sup_pid, worker(NumberGuess.Game.DB, [])
-    {:ok, _game_sup_pid} = Supervisor.start_child sup_pid, supervisor(NumberGuess.GameSup, [db_pid])
+    {:ok, db_pid}        = Supervisor.start_child sup_pid, worker(NumberGuess.DB, [])
+    {:ok, _game_sup_pid} = Supervisor.start_child sup_pid, supervisor(NumberGuess.EngineSupervisor, [db_pid])
     :ok
   end
 

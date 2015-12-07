@@ -1,4 +1,4 @@
-defmodule NumberGuess.Game.State do
+defmodule NumberGuess.Engine.State do
   @moduledoc """
   Game state for the NumberGuess game.
 

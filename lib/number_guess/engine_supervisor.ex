@@ -1,4 +1,4 @@
-defmodule NumberGuess.GameSup do
+defmodule NumberGuess.EngineSupervisor do
   @moduledoc """
   This is the supervisor for the Number Guess game engine.
   """
@@ -23,7 +23,7 @@ defmodule NumberGuess.GameSup do
 
   def init(db_pid) do
     children = [
-      worker(NumberGuess.Game, [db_pid])
+      worker(NumberGuess.Engine, [db_pid])
     ]
 
     supervise children, strategy: :one_for_all

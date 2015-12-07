@@ -1,4 +1,4 @@
-defmodule NumberGuess.Game do
+defmodule NumberGuess.Engine do
   @moduledoc """
   This is the main engine for the Number Guess game.  It understands how to
   pick a number between 1 and 100, judge a winning guess, declare a losing
@@ -6,7 +6,7 @@ defmodule NumberGuess.Game do
   """
 
   use GenServer
-  alias NumberGuess.Game.State, as: State
+  alias NumberGuess.Engine.State, as: State
 
 
   ####
@@ -53,12 +53,12 @@ defmodule NumberGuess.Game do
 
   def init(db_pid) do
     _ = :random.seed :erlang.now
-    starting_state = ensure_state NumberGuess.Game.DB.state(db_pid), db_pid
+    starting_state = ensure_state NumberGuess.DB.state(db_pid), db_pid
     {:ok, starting_state}
   end
 
   def terminate(_reason, current_state = %State{db_pid: db_pid}) do
-    :ok = NumberGuess.Game.DB.state db_pid, current_state
+    :ok = NumberGuess.DB.state db_pid, current_state
   end
 
   def handle_call(:get_guesses, _from, current_state = %State{guesses: guesses}) do
