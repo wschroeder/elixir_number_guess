@@ -11,8 +11,8 @@ defmodule NumberGuess.Engine do
 
   ####
   # External API
-  @type guesses_left :: (0..6)
-  @type guess_t      :: (1..100)
+  @type guesses_left :: 0..6
+  @type guess_t      :: 1..100
   @type judgement    :: :you_win | :you_lose | :too_high | :too_low
 
   @spec start_link(pid()) :: GenServer.on_start()
@@ -21,13 +21,13 @@ defmodule NumberGuess.Engine do
     GenServer.start_link __MODULE__, db_pid, name: NumberGuess.Engine
   end
 
-  @spec get_guesses(pid()) :: guesses_left()
+  @spec get_guesses(pid() | atom()) :: {:guesses, guesses_left()}
   @doc "Returns the number of guesses left in the current game"
   def get_guesses(pid) do
     GenServer.call pid, :get_guesses
   end
 
-  @spec guess(pid(), guess_t()) :: {:guess, guess_t(), judgement(), guesses_left()}
+  @spec guess(pid() | atom(), guess_t()) :: {:guess, guess_t(), judgement(), guesses_left()}
   @doc "Submits a guess to the game server."
   def guess(pid, number) do
     GenServer.call pid, {:guess, number}
@@ -84,6 +84,5 @@ defmodule NumberGuess.Engine do
       {:guess, guessed_number, judge(guessed_number, number), guesses - 1},
       %State{guesses: guesses - 1, number: number, db_pid: db_pid}}
   end
-
 end
 
