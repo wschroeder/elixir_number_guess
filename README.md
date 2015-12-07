@@ -5,6 +5,17 @@ This is the NumberGuess game!
 The computer opponent comes up with a secret number between 1 and 100, and you
 get six chances to guess it.
 
+
+## Escript
+
+This game is designed to be run as an escript.  Use:
+
+  mix escript.build
+
+
+to produce a "number_guess" script, and enjoy the game!
+
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:

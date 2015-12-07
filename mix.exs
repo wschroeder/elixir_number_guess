@@ -7,7 +7,12 @@ defmodule NumberGuess.Mixfile do
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps,
+     escript: escript]
+  end
+
+  def escript do
+    [main_module: NumberGuess.Interface]
   end
 
   # Configuration for the OTP application

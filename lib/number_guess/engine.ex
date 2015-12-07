@@ -18,7 +18,7 @@ defmodule NumberGuess.Engine do
   @spec start_link(pid()) :: GenServer.on_start()
   @doc "Starts the Game server with its dependent DB pid and links it to the current process"
   def start_link(db_pid) do
-    GenServer.start_link __MODULE__, db_pid
+    GenServer.start_link __MODULE__, db_pid, name: NumberGuess.Engine
   end
 
   @spec get_guesses(pid()) :: guesses_left()
