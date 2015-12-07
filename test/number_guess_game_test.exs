@@ -31,7 +31,7 @@ defmodule NumberGuessGameTest do
 
   defp with_new_server(number, block) do
     {:ok, db_pid}   = GenServer.start NumberGuess.Game.DB, nil
-    NumberGuess.Game.DB.state db_pid, %State{number: number, db_pid: db_pid}
+    :ok             = NumberGuess.Game.DB.state db_pid, %State{number: number, db_pid: db_pid}
     {:ok, game_pid} = GenServer.start NumberGuess.Game, db_pid
 
     block.(game_pid)

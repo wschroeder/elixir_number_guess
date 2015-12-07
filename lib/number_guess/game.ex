@@ -1,19 +1,34 @@
 defmodule NumberGuess.Game do
+  @moduledoc """
+  This is the main engine for the Number Guess game.  It understands how to
+  pick a number between 1 and 100, judge a winning guess, declare a losing
+  game if the player runs out of guesses, and start new games after games end.
+  """
+
   use GenServer
   alias NumberGuess.Game.State, as: State
 
 
   ####
   # External API
+  @type guesses_left :: (0..6)
+  @type guess_t      :: (1..100)
+  @type judgement    :: :you_win | :you_lose | :too_high | :too_low
 
+  @spec start_link(pid()) :: GenServer.on_start()
+  @doc "Starts the Game server with its dependent DB pid and links it to the current process"
   def start_link(db_pid) do
     GenServer.start_link __MODULE__, db_pid
   end
 
+  @spec get_guesses(pid()) :: guesses_left()
+  @doc "Returns the number of guesses left in the current game"
   def get_guesses(pid) do
     GenServer.call pid, :get_guesses
   end
 
+  @spec guess(pid(), guess_t()) :: {:guess, guess_t(), judgement(), guesses_left()}
+  @doc "Submits a guess to the game server."
   def guess(pid, number) do
     GenServer.call pid, {:guess, number}
   end
@@ -43,8 +58,7 @@ defmodule NumberGuess.Game do
   end
 
   def terminate(_reason, current_state = %State{db_pid: db_pid}) do
-    _ = NumberGuess.Game.DB.state db_pid, current_state
-    :ok
+    :ok = NumberGuess.Game.DB.state db_pid, current_state
   end
 
   def handle_call(:get_guesses, _from, current_state = %State{guesses: guesses}) do

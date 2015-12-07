@@ -1,4 +1,10 @@
 defmodule NumberGuess do
+  @moduledoc """
+  In the Number Guess game, a computer opponent picks a number between 1 and
+  100, and the human player must guess this number in six tries.
+
+  This is the application surrounding the game.
+  """
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
