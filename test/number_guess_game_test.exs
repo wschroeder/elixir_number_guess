@@ -1,5 +1,6 @@
 defmodule NumberGuessGameTest do
   use ExUnit.Case
+  alias NumberGuess.Game.State, as: State
   doctest NumberGuess.Game
 
   test "Play a winning game" do
@@ -29,7 +30,7 @@ defmodule NumberGuessGameTest do
   end
 
   defp with_new_server(number, block) do
-    {:ok, db_pid}   = GenServer.start NumberGuess.Game.DB, number
+    {:ok, db_pid}   = GenServer.start NumberGuess.Game.DB, %State{number: number}
     {:ok, game_pid} = GenServer.start NumberGuess.Game, db_pid
     block.(game_pid)
     Process.exit(game_pid, :test_done)

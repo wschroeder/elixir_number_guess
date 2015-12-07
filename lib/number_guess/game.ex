@@ -22,6 +22,9 @@ defmodule NumberGuess.Game do
   ####
   # Helpers
 
+  defp ensure_state(:no_state),      do: new_game_state
+  defp ensure_state(starting_state), do: starting_state
+
   defp new_game_state do
     %State{number: :random.uniform 100}
   end
@@ -34,7 +37,8 @@ defmodule NumberGuess.Game do
   # GenServer
 
   def init(db_pid) do
-    starting_state = NumberGuess.Game.DB.state db_pid
+    _ = :random.seed :erlang.now
+    starting_state = ensure_state NumberGuess.Game.DB.state db_pid
     {:ok, {starting_state, db_pid}}
   end
 
