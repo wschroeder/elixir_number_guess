@@ -8,11 +8,11 @@ defmodule NumberGuess.EngineSupervisor do
   ####
   # External API
 
-  @spec start_link(GenServer.server()) :: Supervisor.on_start()
   @doc """
   Starts and links the Number Guess game engine supervisor to the current
   process.  Provide the pid of the Number Guess DB server.
   """
+  @spec start_link(GenServer.server()) :: Supervisor.on_start()
   def start_link(db_pid) do
     Supervisor.start_link __MODULE__, db_pid
   end

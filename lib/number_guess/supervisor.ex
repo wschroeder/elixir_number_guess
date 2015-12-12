@@ -8,10 +8,10 @@ defmodule NumberGuess.Supervisor do
   ####
   # External API
 
-  @spec start_link() :: Supervisor.on_start()
   @doc """
   Starts and links the Number Guess supervisor to the current process.
   """
+  @spec start_link() :: Supervisor.on_start()
   def start_link do
     result = {:ok, sup_pid} = Supervisor.start_link __MODULE__, []
     :ok = start_workers sup_pid

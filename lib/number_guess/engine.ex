@@ -15,20 +15,20 @@ defmodule NumberGuess.Engine do
   @type guess_t      :: 1..100
   @type judgement    :: :you_win | :you_lose | :too_high | :too_low
 
-  @spec start_link(GenServer.server()) :: GenServer.on_start()
   @doc "Starts the Game server with its dependent DB and links it to the current process"
+  @spec start_link(GenServer.server()) :: GenServer.on_start()
   def start_link(db_server) do
     GenServer.start_link __MODULE__, db_server, name: NumberGuess.Engine
   end
 
-  @spec get_guesses(GenServer.server()) :: {:guesses, guesses_left()}
   @doc "Returns the number of guesses left in the current game"
+  @spec get_guesses(GenServer.server()) :: {:guesses, guesses_left()}
   def get_guesses(server) do
     GenServer.call server, :get_guesses
   end
 
-  @spec guess(GenServer.server(), guess_t()) :: {:guess, guess_t(), judgement(), guesses_left()}
   @doc "Submits a guess to the game server."
+  @spec guess(GenServer.server(), guess_t()) :: {:guess, guess_t(), judgement(), guesses_left()}
   def guess(server, number) do
     GenServer.call server, {:guess, number}
   end
