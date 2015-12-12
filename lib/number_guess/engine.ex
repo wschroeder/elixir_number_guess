@@ -11,9 +11,10 @@ defmodule NumberGuess.Engine do
 
   ####
   # External API
-  @type guesses_left :: 0..6
-  @type guess_t      :: 1..100
-  @type judgement    :: :you_win | :you_lose | :too_high | :too_low
+  @type guess_response :: {:you_lose, State.guess_t()}
+                        | {:you_win, State.guesses_left()}
+                        | :too_low
+                        | :too_high
 
   @doc "Starts the Game server with its dependent DB and links it to the current process"
   @spec start_link(GenServer.server()) :: GenServer.on_start()
@@ -22,13 +23,13 @@ defmodule NumberGuess.Engine do
   end
 
   @doc "Returns the number of guesses left in the current game"
-  @spec get_guesses(GenServer.server()) :: {:guesses, guesses_left()}
+  @spec get_guesses(GenServer.server()) :: State.guesses_left()
   def get_guesses(server) do
     GenServer.call server, :get_guesses
   end
 
   @doc "Submits a guess to the game server."
-  @spec guess(GenServer.server(), guess_t()) :: {:guess, guess_t(), judgement(), guesses_left()}
+  @spec guess(GenServer.server(), State.guess_t()) :: guess_response()
   def guess(server, number) do
     GenServer.call server, {:guess, number}
   end
@@ -57,32 +58,31 @@ defmodule NumberGuess.Engine do
     {:ok, starting_state}
   end
 
-  def terminate(_reason, current_state = %State{db_server: db_server}) do
-    :ok = NumberGuess.DB.state db_server, current_state
+  def terminate(_reason, current_state) do
+    :ok = NumberGuess.DB.state current_state.db_server, current_state
   end
 
-  def handle_call(:get_guesses, _from, current_state = %State{guesses: guesses}) do
-    {:reply,
-      {:guesses, guesses},
-      current_state}
+  def handle_call(:get_guesses, _from, current_state) do
+    {:reply, current_state.guesses, current_state}
   end
 
-  def handle_call({:guess, guessed_number}, _from, %State{guesses: guesses, number: guessed_number, db_server: db_server}) when is_number guessed_number do
-    {:reply,
-      {:guess, guessed_number, :you_win, guesses - 1},
-      new_game_state db_server}
+  @spec handle_call({:guess, State.guess_t()}, GenServer.from, State.t()) :: {:reply, guess_response(), State.t()}
+  def handle_call({:guess, guessed_number}, _from, current_state = %State{number: guessed_number}) when is_number guessed_number do
+    response  = {:you_win, current_state.guesses - 1}
+    new_state = new_game_state current_state.db_server
+    {:reply, response, new_state}
   end
 
-  def handle_call({:guess, guessed_number}, _from, %State{guesses: 1, number: number, db_server: db_server}) when is_number guessed_number do
-    {:reply,
-      {:guess, guessed_number, :you_lose, number},
-      new_game_state db_server}
+  def handle_call({:guess, guessed_number}, _from, current_state = %State{guesses: 1}) when is_number guessed_number do
+    response  = {:you_lose, current_state.number}
+    new_state = new_game_state current_state.db_server
+    {:reply, response, new_state}
   end
 
-  def handle_call({:guess, guessed_number}, _from, %State{guesses: guesses, number: number, db_server: db_server}) when is_number guessed_number do
-    {:reply,
-      {:guess, guessed_number, judge(guessed_number, number), guesses - 1},
-      %State{guesses: guesses - 1, number: number, db_server: db_server}}
+  def handle_call({:guess, guessed_number}, _from, current_state) when is_number guessed_number do
+    response  = judge guessed_number, current_state.number
+    new_state = %{current_state | guesses: current_state.guesses - 1}
+    {:reply, response, new_state}
   end
 end
 

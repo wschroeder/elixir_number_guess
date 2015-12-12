@@ -24,7 +24,7 @@ defmodule NumberGuess.Interface do
   end
 
   defp announce_guesses do
-    {:guesses, guesses_left} = NumberGuess.Engine.get_guesses NumberGuess.Engine
+    guesses_left = NumberGuess.Engine.get_guesses NumberGuess.Engine
     IO.puts "You have #{str guesses_left} guesses."
   end
 
@@ -62,23 +62,23 @@ defmodule NumberGuess.Interface do
     game_loop
   end
 
-  defp handle_guess_response({:guess, guessed_number, :you_lose, game_number}) do
-    IO.puts "#{str guessed_number} is not my number, #{str game_number}, and since you are out of guesses, YOU LOSE!"
+  defp handle_guess_response({:you_lose, game_number}) do
+    IO.puts "Sorry, my number is #{str game_number}, and since you are out of guesses, YOU LOSE!"
     start_game
   end
 
-  defp handle_guess_response({:guess, number, :you_win, guesses_left}) do
-    IO.puts "#{str number} is the number I was thinking of!  YOU WIN with #{str guesses_left} guesses left!!!"
+  defp handle_guess_response({:you_win, guesses_left}) do
+    IO.puts "That is the number I was thinking of!  YOU WIN with #{str guesses_left} guesses left!!!"
     start_game
   end
 
-  defp handle_guess_response({:guess, number, :too_high, _}) do
-    IO.puts "#{str number} is too high."
+  defp handle_guess_response(:too_high) do
+    IO.puts "Your guess is too high."
     game_loop
   end
 
-  defp handle_guess_response({:guess, number, :too_low, _}) do
-    IO.puts "#{str number} is too low."
+  defp handle_guess_response(:too_low) do
+    IO.puts "Your guess is too low."
     game_loop
   end
 end

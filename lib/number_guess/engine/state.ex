@@ -8,5 +8,13 @@ defmodule NumberGuess.Engine.State do
   """
 
   defstruct number: 1, guesses: 6, db_server: nil
+
+  @type guesses_left :: 0..6
+  @type guess_t      :: 1..100
+  @type t :: %NumberGuess.Engine.State{
+      number:    guess_t(),
+      guesses:   guesses_left(),
+      db_server: GenServer.server()
+  }
 end
 
