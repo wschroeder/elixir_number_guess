@@ -12,16 +12,16 @@ defmodule NumberGuess.DB do
     Agent.start_link fn -> starting_state end
   end
 
-  @spec state(pid()) :: term()
+  @spec state(GenServer.server()) :: term()
   @doc "Retrieves the current document/term stored in the DB."
-  def state(pid) do
-    Agent.get pid, &(&1)
+  def state(server) do
+    Agent.get server, &(&1)
   end
 
-  @spec state(pid(), term()) :: :ok
+  @spec state(GenServer.server(), term()) :: :ok
   @doc "Stores a document/term in the DB."
-  def state(pid, new_state) do
-    Agent.update pid, fn _ -> new_state end
+  def state(server, new_state) do
+    Agent.update server, fn _ -> new_state end
   end
 end
 
